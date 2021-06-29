@@ -1,0 +1,9 @@
+Package: com.nahtedetihw.macpass
+Name: MacPass
+Version: 1.0
+Architecture: iphoneos-arm
+Description: MacPass gives MacOS password screen for passcode!
+Maintainer: Ethan Whited
+Author: Ethan Whited
+Section: Tweaks
+Depends: mobilesubstrate, com.spark.libsparkcolourpicker, com.muirey03.libimagepicker, ws.hbang.common
