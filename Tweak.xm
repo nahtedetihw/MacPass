@@ -107,6 +107,19 @@ static bool isBabyDevice() {
 }
 %end
 
+%hook CSLockScreenSettings
+-(BOOL)autoDismissUnlockedLockScreen {
+    if (enableAutomaticUnlock) {
+    if (isShowingMedia == YES) return NO;
+    if (isShowingNotifs == YES) return NO;
+    if (isShowingAlarm == YES) return NO;
+    if (isShowingCharging == YES) return NO;
+    return YES;
+    }
+    return %orig;
+}
+%end
+
 %hook CSPasscodeViewController
 %property (nonatomic, strong) _UIBackdropViewSettings *settingsPasscodeBackground;
 %property (nonatomic, strong) _UIBackdropView *blurViewPasscodeBackground;
@@ -253,7 +266,7 @@ static bool isBabyDevice() {
     [self.textField setAttributedPlaceholder:[[NSAttributedString alloc] initWithString:@"Enter Passcode" attributes:@{NSForegroundColorAttributeName:[[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.2], NSFontAttributeName : [UIFont boldSystemFontOfSize:16.0]}]];
     [[UITextField appearance] setTintColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"]];
     self.textField.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
-    //[self.textField becomeFirstResponder];
+    self.textField.clearsOnBeginEditing = NO;
     [self.textField setSecureTextEntry:YES];
     
     self.unlockButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -550,6 +563,20 @@ static bool isBabyDevice() {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithFaceID) name:@"MacPassPasscodeAuthentication" object:nil];
 }
 
+%new
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    NSString *updatedString = [self.textField.text stringByReplacingCharactersInRange:range withString:string];
+    self.textField.text = updatedString;
+
+    NSRange selectedRange = NSMakeRange(range.location + string.length, 0);
+    UITextPosition* from = [self.textField positionFromPosition:self.textField.beginningOfDocument offset:selectedRange.location];
+    UITextPosition* to = [self.textField positionFromPosition:from offset:selectedRange.length];
+    self.textField.selectedTextRange = [self.textField textRangeFromPosition:from toPosition:to];
+
+    [self.textField sendActionsForControlEvents:UIControlEventEditingChanged];
+    return NO;
+}
+
 - (void)viewDidAppear:(BOOL)animated {
     %orig;
     if ([[%c(SBLockScreenManager) sharedInstance] isLockScreenVisible] && startWithKeyboard) [self.textField becomeFirstResponder];
@@ -581,12 +608,11 @@ static bool isBabyDevice() {
 
 %new
 - (void)autoUnlock {
-    
-    if (self.textField.text.length >= 4) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.4 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:[NSString stringWithFormat:@"%@", self.textField.text] finishUIUnlock:1 completion:nil];
-        });
-    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (self.textField.text.length >= 4) {
+                [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:[NSString stringWithFormat:@"%@", self.textField.text] finishUIUnlock:1 completion:nil];
+        }
+    });
     if (![[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self dismiss];
     AudioServicesPlaySystemSound(1519);
 }

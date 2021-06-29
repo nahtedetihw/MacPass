@@ -141,6 +141,12 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
+			<string>This option could disable your phone (use at your own risk)</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
 			<string>Startup</string>
 		</dict>
 		<dict>
@@ -154,6 +160,12 @@
 			<string>showOnStartup</string>
 			<key>label</key>
 			<string>Show On Startup</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Shows the passcode view right away (unless music is playing or notifications are present)</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -171,7 +183,7 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
-			<string>Shows the passcode view right away (unless music is playing or notifications are present)</string>
+			<string>Shows the keyboard right away</string>
 		</dict>
 		<dict>
 			<key>cell</key>

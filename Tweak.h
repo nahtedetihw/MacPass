@@ -120,6 +120,7 @@ traitCollection:(UITraitCollection *)traitCollection {
 - (void)safeModeShowPopup:(UIButton *)sender;
 - (void)safeModeNo;
 - (void)safeModeYes;
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
 @end
 
 @interface SBUIProudLockIconView : UIView
