@@ -285,9 +285,11 @@ UIView *blackViewRespring;
     
     AudioServicesPlaySystemSound(1519);
 
-    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.0" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
+    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.1" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
 
-    [self.changelogController addBulletedListItemWithTitle:@"Initial" description:@"Initial Tweak." image:[UIImage systemImageNamed:@"1.circle.fill"]];
+    [self.changelogController addBulletedListItemWithTitle:@"Auto Unlock" description:@"Fixed issues with Auto Unlock and separated the option for Auto Unlock with FaceID." image:[UIImage systemImageNamed:@"1.circle.fill"]];
+    
+    [self.changelogController addBulletedListItemWithTitle:@"Passcode View" description:@"Fixed visual issues when using alphanumeric passcode." image:[UIImage systemImageNamed:@"2.circle.fill"]];
 
     _UIBackdropViewSettings *settings = [_UIBackdropViewSettings settingsForStyle:2];
 

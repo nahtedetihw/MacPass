@@ -11,6 +11,7 @@ static NSString *nsNotificationString = @"com.nahtedetihw.macpassprefs/preferenc
 HBPreferences *preferences;
 BOOL enabled;
 BOOL enableAutomaticUnlock;
+BOOL enableAutomaticUnlockFaceID;
 BOOL showOnStartup;
 BOOL startWithKeyboard;
 NSString *usernameString;
@@ -109,7 +110,7 @@ static bool isBabyDevice() {
 
 %hook CSLockScreenSettings
 -(BOOL)autoDismissUnlockedLockScreen {
-    if (enableAutomaticUnlock) {
+    if (enableAutomaticUnlockFaceID) {
     if (isShowingMedia == YES) return NO;
     if (isShowingNotifs == YES) return NO;
     if (isShowingAlarm == YES) return NO;
@@ -144,7 +145,7 @@ static bool isBabyDevice() {
 %property (nonatomic, strong) _UIBackdropViewSettings *settingsSafeMode;
 %property (nonatomic, strong) _UIBackdropView *blurViewSafeMode;
 %property (nonatomic, strong) UILabel *safeModeLabel;
-
+%property (nonatomic, strong) NSTimer *searchTimer;
 - (void)viewDidLoad {
     %orig;
     
@@ -261,7 +262,8 @@ static bool isBabyDevice() {
     } else if (passcodeType == 1) {
         self.textField.keyboardType = UIKeyboardTypeASCIICapable;
     }
-    if (enableAutomaticUnlock) [self.textField addTarget:self action:@selector(autoUnlock) forControlEvents:UIControlEventEditingChanged];
+
+    if (enableAutomaticUnlock) [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
      
     [self.textField setAttributedPlaceholder:[[NSAttributedString alloc] initWithString:@"Enter Passcode" attributes:@{NSForegroundColorAttributeName:[[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.2], NSFontAttributeName : [UIFont boldSystemFontOfSize:16.0]}]];
     [[UITextField appearance] setTintColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"]];
@@ -560,7 +562,25 @@ static bool isBabyDevice() {
         [self.safeModeLabel.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor constant:250].active = true;
     }
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithFaceID) name:@"MacPassPasscodeAuthentication" object:nil];
+    if (enableAutomaticUnlockFaceID) [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithFaceID) name:@"MacPassPasscodeAuthentication" object:nil];
+}
+
+%new
+-(void)textFieldDidChange :(UITextField *)textField {
+    if (self.searchTimer != nil) {
+        [self.searchTimer invalidate];
+        self.searchTimer = nil;
+    }
+    self.searchTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5 target: self selector: @selector(searchForKeyword:) userInfo: self.textField.text repeats: NO];
+}
+
+%new
+- (void) searchForKeyword:(NSTimer *)timer {
+    NSString *keyword = (NSString*)timer.userInfo;
+
+    [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:keyword finishUIUnlock:1 completion:nil];
+    if (![[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self dismiss];
+    AudioServicesPlaySystemSound(1519);
 }
 
 %new
@@ -605,18 +625,7 @@ static bool isBabyDevice() {
     
     [[NSNotificationCenter defaultCenter] postNotificationName:@"MacPassPasscodeNotVisible" object:nil];
 }
-
-%new
-- (void)autoUnlock {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (self.textField.text.length >= 4) {
-                [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:[NSString stringWithFormat:@"%@", self.textField.text] finishUIUnlock:1 completion:nil];
-        }
-    });
-    if (![[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self dismiss];
-    AudioServicesPlaySystemSound(1519);
-}
-
+ 
 %new
 - (void)attemptUnlock {
     if ([self.textField.text length] < 4) [self wrongPasscode];
@@ -910,6 +919,47 @@ static bool isBabyDevice() {
 - (void)updateStatusText:(id)arg1 subtitle:(id)arg2 animated:(BOOL)arg3 {
     %orig(nil, nil, NO);
 }
+- (void)didMoveToWindow {
+    %orig;
+    [self removeFromSuperview];
+}
+%end
+
+%hook SBUIPasscodeLockViewBase
+-(void)_setStatusText:(id)arg1 {
+    %orig(nil);
+}
+-(void)_setStatusSubtitleText:(id)arg1 {
+    %orig(nil);
+}
+/*
+-(void)setBiometricAuthenticationAllowed:(BOOL)arg1 {
+    %orig(NO);
+}
+*/
+-(void)setPasscodeAuthenticationView:(UIView *)arg1 {
+    %orig(nil);
+}
+-(BOOL)showsCancelButton {
+    return NO;
+}
+-(BOOL)showsEmergencyCallButton {
+    return NO;
+}
+%end
+
+%hook SBUIAlphanumericPasscodeEntryField
+- (void)didMoveToWindow {
+    %orig;
+    [self removeFromSuperview];
+}
+%end
+
+%hook SBUIPasscodeTextField
+- (void)didMoveToWindow {
+    %orig;
+    [self removeFromSuperview];
+}
 %end
 
 %hook SBUIPasscodeLockViewSimpleFixedDigitKeyPad
@@ -996,11 +1046,13 @@ static bool isBabyDevice() {
 }
 %end
 
+/*
 %hook SBUIPasscodeBiometricResource
 -(BOOL)hasBiometricAuthenticationCapabilityEnabled {
     return NO;
 }
 %end
+*/
 %end
 
 static void notificationCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -1016,6 +1068,7 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
     [preferences registerBool:&showOnStartup default:NO forKey:@"showOnStartup"];
     [preferences registerBool:&startWithKeyboard default:NO forKey:@"startWithKeyboard"];
     [preferences registerBool:&enableAutomaticUnlock default:NO forKey:@"enableAutomaticUnlock"];
+    [preferences registerBool:&enableAutomaticUnlockFaceID default:NO forKey:@"enableAutomaticUnlockFaceID"];
     [preferences registerObject:&usernameString default:@"MacPass" forKey:@"usernameString"];
     [preferences registerObject:&profilePicture default:nil forKey:@"profilePicture"];
     [preferences registerInteger:&passcodeType default:0 forKey:@"passcodeType"];

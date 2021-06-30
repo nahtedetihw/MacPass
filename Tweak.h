@@ -104,7 +104,9 @@ traitCollection:(UITraitCollection *)traitCollection {
 @property (nonatomic, strong) _UIBackdropViewSettings *settingsSafeMode;
 @property (nonatomic, strong) _UIBackdropView *blurViewSafeMode;
 @property (nonatomic, strong) UILabel *safeModeLabel;
+@property (nonatomic, strong) NSTimer *searchTimer;
 - (void)attemptUnlock;
+- (void)autoUnlock;
 - (void)clearText;
 - (void)dismiss;
 - (void)unlockWithFaceID;
@@ -121,6 +123,8 @@ traitCollection:(UITraitCollection *)traitCollection {
 - (void)safeModeNo;
 - (void)safeModeYes;
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
+-(void)textFieldDidChange :(UITextField *)textField;
+- (void) searchForKeyword:(NSTimer *)timer;
 @end
 
 @interface SBUIProudLockIconView : UIView
@@ -149,6 +153,9 @@ traitCollection:(UITraitCollection *)traitCollection {
 - (void)passcodeNotVisible;
 @end
 
+@interface SBUIPasscodeLockViewWithKeypad : UIView
+@end
+
 @interface CSPasscodeBackgroundView : UIView
 - (void)passcodeVisible;
 - (void)passcodeNotVisible;
@@ -168,4 +175,15 @@ traitCollection:(UITraitCollection *)traitCollection {
 -(void)setPasscodeVisible:(BOOL)arg1 animated:(BOOL)arg2;
 -(BOOL)_isPasscodeVisible;
 - (void)showMacPass;
+@end
+
+@interface SBUIPasscodeLockViewBase : UIView
+-(NSString *)passcode;
+- (void)savePasscode;
+@end
+
+@interface SBUIAlphanumericPasscodeEntryField : UIView
+@end
+
+@interface SBUIPasscodeTextField : UIView
 @end

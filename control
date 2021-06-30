@@ -1,6 +1,6 @@
 Package: com.nahtedetihw.macpass
 Name: MacPass
-Version: 1.0
+Version: 1.1
 Architecture: iphoneos-arm
 Description: MacPass gives MacOS password screen for passcode!
 Maintainer: Ethan Whited

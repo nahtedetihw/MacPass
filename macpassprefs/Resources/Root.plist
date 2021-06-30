@@ -135,13 +135,19 @@
 			<key>key</key>
 			<string>enableAutomaticUnlock</string>
 			<key>label</key>
-			<string>Enable Auto Unlock</string>
+			<string>Enable Passcode</string>
 		</dict>
 		<dict>
 			<key>cell</key>
-			<string>PSGroupCell</string>
+			<string>PSSwitchCell</string>
+			<key>default</key>
+			<false/>
+			<key>defaults</key>
+			<string>com.nahtedetihw.macpassprefs</string>
+			<key>key</key>
+			<string>enableAutomaticUnlockFaceID</string>
 			<key>label</key>
-			<string>This option could disable your phone (use at your own risk)</string>
+			<string>Enable FaceID</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -191,7 +197,7 @@
 			<key>footerAlignment</key>
 			<string>1</string>
 			<key>footerText</key>
-			<string>MacPass1.0</string>
+			<string>MacPass1.1</string>
 		</dict>
 		<dict>
 			<key>cell</key>
