@@ -6,4 +6,4 @@ Description: MacPass gives MacOS password screen for passcode!
 Maintainer: Ethan Whited
 Author: Ethan Whited
 Section: Tweaks
-Depends: mobilesubstrate, com.spark.libsparkcolourpicker, com.muirey03.libimagepicker, ws.hbang.common
+Depends: mobilesubstrate, preferenceloader, ws.hbang.common, com.mrgcgamer.libgcuniversal

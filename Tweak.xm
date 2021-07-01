@@ -4,9 +4,6 @@
 // https://github.com/schneelittchen/Diary
 // https://twitter.com/schneelittchen
 
-static NSMutableDictionary *colorDictionary;
-
-static NSString *nsNotificationString = @"com.nahtedetihw.macpassprefs/preferences.changed";
 
 HBPreferences *preferences;
 BOOL enabled;
@@ -196,7 +193,7 @@ static bool isBabyDevice() {
     } else {
         self.profilePictureView = [[UIImageView alloc] initWithFrame:CGRectMake(self.view.center.x,self.view.center.y,175,175)];
     }
-    self.profilePictureView.image = [UIImage imageWithData:profilePicture];
+    self.profilePictureView.image = [GcImagePickerUtils imageFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"pfpImage"];
     self.profilePictureView.layer.masksToBounds = YES;
     self.profilePictureView.layer.cornerRadius = self.profilePictureView.frame.size.height/2;
     self.profilePictureView.layer.borderWidth = 0.2;
@@ -222,7 +219,7 @@ static bool isBabyDevice() {
     self.usernameLabel.text = usernameString;
     self.usernameLabel.textAlignment = NSTextAlignmentCenter;
     self.usernameLabel.font = [UIFont boldSystemFontOfSize:24];
-    self.usernameLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    self.usernameLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     [self.view addSubview:self.usernameLabel];
     
     if (isBabyDevice() == YES) {
@@ -265,9 +262,9 @@ static bool isBabyDevice() {
 
     if (enableAutomaticUnlock) [self.textField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
      
-    [self.textField setAttributedPlaceholder:[[NSAttributedString alloc] initWithString:@"Enter Passcode" attributes:@{NSForegroundColorAttributeName:[[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.2], NSFontAttributeName : [UIFont boldSystemFontOfSize:16.0]}]];
-    [[UITextField appearance] setTintColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"]];
-    self.textField.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    [self.textField setAttributedPlaceholder:[[NSAttributedString alloc] initWithString:@"Enter Passcode" attributes:@{NSForegroundColorAttributeName:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff33"], NSFontAttributeName : [UIFont boldSystemFontOfSize:16.0]}]];
+    [[UITextField appearance] setTintColor:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"]];
+    self.textField.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     self.textField.clearsOnBeginEditing = NO;
     [self.textField setSecureTextEntry:YES];
     
@@ -275,7 +272,7 @@ static bool isBabyDevice() {
     [self.unlockButton setImage:[[UIImage imageWithContentsOfFile:@"/Library/Application Support/MacPass/unlock.png"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate] forState:UIControlStateNormal];
     [self.unlockButton addTarget:self action:@selector(attemptUnlock)
             forControlEvents:UIControlEventTouchUpInside];
-    self.unlockButton.tintColor = [[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.5];
+    self.unlockButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
 
     self.textField.rightView = self.unlockButton;
     self.textField.rightViewMode = UITextFieldViewModeAlways;
@@ -285,7 +282,7 @@ static bool isBabyDevice() {
     [self.clearButton setImage:clearImage forState:UIControlStateNormal];
     [self.clearButton addTarget:self action:@selector(clearText)
             forControlEvents:UIControlEventTouchUpInside];
-    self.clearButton.tintColor = [[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.5];
+    self.clearButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
 
     self.textField.leftView = self.clearButton;
     self.textField.leftViewMode = UITextFieldViewModeAlways;
@@ -342,7 +339,7 @@ static bool isBabyDevice() {
     }
     self.respringButton.layer.masksToBounds = YES;
     self.respringButton.layer.cornerRadius = self.respringButton.frame.size.height/2;
-    self.respringButton.tintColor = [[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.5];
+    self.respringButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
     [self.view addSubview:self.respringButton];
     
     if (isBabyDevice() == YES) {
@@ -389,7 +386,7 @@ static bool isBabyDevice() {
     self.respringLabel.text = @"Respring";
     self.respringLabel.textAlignment = NSTextAlignmentCenter;
     self.respringLabel.font = [UIFont boldSystemFontOfSize:12];
-    self.respringLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    self.respringLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     [self.view addSubview:self.respringLabel];
     
     if (isBabyDevice()) {
@@ -420,7 +417,7 @@ static bool isBabyDevice() {
     }
     self.exitButton.layer.masksToBounds = YES;
     self.exitButton.layer.cornerRadius = self.exitButton.frame.size.height/2;
-    self.exitButton.tintColor = [[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.5];
+    self.exitButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
     [self.view addSubview:self.exitButton];
     
     if (isBabyDevice() == YES) {
@@ -467,7 +464,7 @@ static bool isBabyDevice() {
     self.exitLabel.text = @"Go Back";
     self.exitLabel.textAlignment = NSTextAlignmentCenter;
     self.exitLabel.font = [UIFont boldSystemFontOfSize:12];
-    self.exitLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    self.exitLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     [self.view addSubview:self.exitLabel];
     
     if (isBabyDevice()) {
@@ -498,7 +495,7 @@ static bool isBabyDevice() {
     }
     self.safeModeButton.layer.masksToBounds = YES;
     self.safeModeButton.layer.cornerRadius = self.safeModeButton.frame.size.height/2;
-    self.safeModeButton.tintColor = [[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] colorWithAlphaComponent:0.5];
+    self.safeModeButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
     [self.view addSubview:self.safeModeButton];
     
     if (isBabyDevice() == YES) {
@@ -545,7 +542,7 @@ static bool isBabyDevice() {
     self.safeModeLabel.text = @"Safe Mode";
     self.safeModeLabel.textAlignment = NSTextAlignmentCenter;
     self.safeModeLabel.font = [UIFont boldSystemFontOfSize:12];
-    self.safeModeLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    self.safeModeLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     [self.view addSubview:self.safeModeLabel];
     
     if (isBabyDevice()) {
@@ -606,7 +603,7 @@ static bool isBabyDevice() {
     %orig;
     
     self.view.alpha = 0;
-    [UIView animateWithDuration:0.3 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.view.alpha = 1;
     } completion:nil];
     
@@ -619,7 +616,7 @@ static bool isBabyDevice() {
     [self dismissViewControllerAnimated:respringPopController completion:nil];
     [self dismissViewControllerAnimated:safeModePopController completion:nil];
 
-    [UIView animateWithDuration:0.3 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.view.alpha = 0;
     } completion:nil];
     
@@ -688,7 +685,7 @@ static bool isBabyDevice() {
     respringPopLabel.textAlignment = NSTextAlignmentCenter;
     respringPopLabel.adjustsFontSizeToFitWidth = YES;
     respringPopLabel.font = [UIFont boldSystemFontOfSize:20];
-    respringPopLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    respringPopLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     respringPopLabel.text = @"Are you sure you want to respring?";
     [respringPopController.view addSubview:respringPopLabel];
     
@@ -700,10 +697,10 @@ static bool isBabyDevice() {
     respringYesButton.imageEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     respringYesButton.titleEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     [respringYesButton setContentMode:UIViewContentModeCenter];
-    respringYesButton.tintColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    respringYesButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"];
     //[respringYesButton setTitle:@"Yes" forState:UIControlStateNormal];
     respringYesButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
-    [respringYesButton setTitleColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] forState:UIControlStateNormal];
+    [respringYesButton setTitleColor:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"] forState:UIControlStateNormal];
     respringYesButton.frame = CGRectMake(145, 80, 20, 20);
     [respringPopController.view addSubview:respringYesButton];
     
@@ -715,10 +712,10 @@ static bool isBabyDevice() {
     respringNoButton.imageEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     respringNoButton.titleEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     [respringNoButton setContentMode:UIViewContentModeCenter];
-    respringNoButton.tintColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    respringNoButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     //[respringNoButton setTitle:@"No" forState:UIControlStateNormal];
     respringNoButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
-    [respringNoButton setTitleColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] forState:UIControlStateNormal];
+    [respringNoButton setTitleColor:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"] forState:UIControlStateNormal];
     respringNoButton.frame = CGRectMake(45, 80, 20, 20);
     [respringPopController.view addSubview:respringNoButton];
      
@@ -773,7 +770,7 @@ static bool isBabyDevice() {
     safeModePopLabel.textAlignment = NSTextAlignmentCenter;
     safeModePopLabel.adjustsFontSizeToFitWidth = YES;
     safeModePopLabel.font = [UIFont boldSystemFontOfSize:20];
-    safeModePopLabel.textColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    safeModePopLabel.textColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     safeModePopLabel.text = @"Are you sure you want to enter safe mode?";
     [safeModePopController.view addSubview:safeModePopLabel];
     
@@ -785,10 +782,10 @@ static bool isBabyDevice() {
     safeModeYesButton.imageEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     safeModeYesButton.titleEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     [safeModeYesButton setContentMode:UIViewContentModeCenter];
-    safeModeYesButton.tintColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    safeModeYesButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     //[safeModeYesButton setTitle:@"Yes" forState:UIControlStateNormal];
     safeModeYesButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
-    [safeModeYesButton setTitleColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] forState:UIControlStateNormal];
+    [safeModeYesButton setTitleColor:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"] forState:UIControlStateNormal];
     safeModeYesButton.frame = CGRectMake(145, 80, 20, 20);
     [safeModePopController.view addSubview:safeModeYesButton];
     
@@ -800,10 +797,10 @@ static bool isBabyDevice() {
     safeModeNoButton.imageEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     safeModeNoButton.titleEdgeInsets = UIEdgeInsetsMake(-2,-2,-2,-2);
     [safeModeNoButton setContentMode:UIViewContentModeCenter];
-    safeModeNoButton.tintColor = [SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"];
+    safeModeNoButton.tintColor = [GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff"];
     //[safeModeNoButton setTitle:@"No" forState:UIControlStateNormal];
     safeModeNoButton.titleLabel.font = [UIFont boldSystemFontOfSize:20];
-    [safeModeNoButton setTitleColor:[SparkColourPickerUtils colourWithString:[colorDictionary objectForKey:@"tintColor"] withFallback:@"#FFFFFF"] forState:UIControlStateNormal];
+    [safeModeNoButton setTitleColor:[GcColorPickerUtils colorFromDefaults:@"com.nahtedetihw.macpassprefs" withKey:@"tintColor" fallback:@"ffffff80"] forState:UIControlStateNormal];
     safeModeNoButton.frame = CGRectMake(45, 80, 20, 20);
     [safeModePopController.view addSubview:safeModeNoButton];
      
@@ -893,7 +890,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -901,7 +898,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeNotVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -979,7 +976,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -987,7 +984,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeNotVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 1;
         self.hidden = NO;
     } completion:nil];
@@ -1005,7 +1002,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -1013,7 +1010,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeNotVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -1031,7 +1028,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 0;
         self.hidden = YES;
     } completion:nil];
@@ -1039,7 +1036,7 @@ static bool isBabyDevice() {
 
 %new
 - (void)passcodeNotVisible {
-    [UIView animateWithDuration:0.5 delay:0 options:nil animations:^{
+    [UIView animateWithDuration:0.5 delay:0 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
         self.alpha = 1;
         self.hidden = NO;
     } completion:nil];
@@ -1055,13 +1052,8 @@ static bool isBabyDevice() {
 */
 %end
 
-static void notificationCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
-    colorDictionary = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/private/var/mobile/Library/Preferences/com.nahtedetihw.macpassprefs.color.plist"];
-}
 
 %ctor {
-    notificationCallback(NULL, NULL, NULL, NULL, NULL);
-    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, notificationCallback, (CFStringRef)nsNotificationString, NULL, CFNotificationSuspensionBehaviorCoalesce);
 
     preferences = [[HBPreferences alloc] initWithIdentifier:@"com.nahtedetihw.macpassprefs"];
     [preferences registerBool:&enabled default:NO forKey:@"enabled"];

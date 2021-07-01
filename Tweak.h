@@ -1,8 +1,10 @@
 #import <UIKit/UIKit.h>
 #import <AudioToolbox/AudioServices.h>
 #import <spawn.h>
-#import <SparkColourPickerUtils.h>
-#import <SparkColourPickerView.h>
+//#import "GcImagePickerUtils.h"
+//#import "GcColorPickerUtils.h"
+#import <GcUniversal/GcColorPickerUtils.h>
+#import <GcUniversal/GcImagePickerUtils.h>
 #import <Cephei/HBPreferences.h>
 #include <dlfcn.h>
 
