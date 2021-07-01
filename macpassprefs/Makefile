@@ -1,5 +1,3 @@
-ARCHS = arm64 arm64e
-
 include $(THEOS)/makefiles/common.mk
 
 PREFIX=$(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
@@ -12,7 +10,7 @@ $(BUNDLE_NAME)_INSTALL_PATH = /Library/PreferenceBundles
 $(BUNDLE_NAME)_FRAMEWORKS = UIKit
 $(BUNDLE_NAME)_PRIVATE_FRAMEWORKS = Preferences OnBoardingKit
 $(BUNDLE_NAME)_EXTRA_FRAMEWORKS = Cephei CepheiPrefs
-$(BUNDLE_NAME)_LIBRARIES += sparkcolourpicker imagepicker
+$(BUNDLE_NAME)_LIBRARIES += gcuniversal
 $(BUNDLE_NAME)_CFLAGS = -Wno-deprecated-declarations
 
 include $(THEOS_MAKE_PATH)/bundle.mk

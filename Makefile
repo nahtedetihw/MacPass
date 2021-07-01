@@ -1,8 +1,7 @@
-TARGET := iphone:clang:latest:13.0
-INSTALL_TARGET_PROCESSES = SpringBoard
+export ARCHS = arm64 arm64e
+export TARGET := iphone:clang:latest:13.0
 
 DEBUG = 0
-
 FINALPACKAGE = 1
 
 PREFIX=$(THEOS)/toolchain/Xcode.xctoolchain/usr/bin/
@@ -13,13 +12,12 @@ include $(THEOS)/makefiles/common.mk
 
 TWEAK_NAME = MacPass
 $(TWEAK_NAME)_FILES = Tweak.xm
-$(TWEAK_NAME)_EXTRA_FRAMEWORKS += Cephei
-$(TWEAK_NAME)_LIBRARIES += sparkcolourpicker imagepicker
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
+$(TWEAK_NAME)_LIBRARIES = gcuniversal
 $(TWEAK_NAME)_FRAMEWORKS = UIKit
+$(TWEAK_NAME)_EXTRA_FRAMEWORKS += Cephei
 
 SUBPROJECTS += macpassprefs
-SUBPROJECTS += customimagepicker
 
 after-install::
 	install.exec "sbreload"
