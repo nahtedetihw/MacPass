@@ -28,14 +28,6 @@
 @property (getter=isPresentingContent,nonatomic,readonly) BOOL presentingContent;
 @end
 
-@interface CSCoverSheetViewController : UIViewController
-@property (nonatomic,readonly) CSPresentationViewController * mainPagePresentationViewController;
-@property (assign,getter=isShowingMediaControls,nonatomic) BOOL showingMediaControls;
-@property (nonatomic,readonly) BOOL hasContentAboveCoverSheet;
--(BOOL)_isShowingChargingModal;
-- (void)updateStartup;
-@end
-
 @interface NCNotificationStructuredListViewController : UIViewController
 @property (nonatomic,readonly) BOOL hasVisibleContent;
 - (void)updateStartup;
@@ -74,9 +66,23 @@ traitCollection:(UITraitCollection *)traitCollection {
 @interface _UIBackdropView : UIView
 -(id)initWithFrame:(CGRect)arg1 autosizesToFitSuperview:(BOOL)arg2 settings:(id)arg3 ;
 -(id)initWithSettings:(id)arg1 ;
+-(id)initWithStyle:(long long)arg1 ;
+- (void)setBlurFilterWithRadius:(float)arg1 blurQuality:(id)arg2 blurHardEdges:(int)arg3;
+- (void)setBlurFilterWithRadius:(float)arg1 blurQuality:(id)arg2;
+- (void)setBlurHardEdges:(int)arg1;
+- (void)setBlurQuality:(id)arg1;
+- (void)setBlurRadius:(float)arg1;
+- (void)setBlurRadiusSetOnce:(BOOL)arg1;
+- (void)setBlursBackground:(BOOL)arg1;
+- (void)setBlursWithHardEdges:(BOOL)arg1;
 @end
 
 @interface _UIBackdropViewSettings : NSObject
+@property (assign,getter=isEnabled,nonatomic) BOOL enabled;
+@property (assign,nonatomic) double blurRadius;
+@property (nonatomic,copy) NSString * blurQuality;
+@property (assign,nonatomic) BOOL usesBackdropEffectView;
+-(id)initWithDefaultValues;
 +(id)settingsForStyle:(long long)arg1 ;
 @end
 
@@ -125,6 +131,16 @@ traitCollection:(UITraitCollection *)traitCollection {
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string;
 -(void)textFieldDidChange :(UITextField *)textField;
 - (void) searchForKeyword:(NSTimer *)timer;
+- (void)unlockWithTouchID;
+@end
+
+@interface CSCoverSheetViewController : UIViewController
+@property (nonatomic,readonly) CSPresentationViewController * mainPagePresentationViewController;
+@property (assign,getter=isShowingMediaControls,nonatomic) BOOL showingMediaControls;
+@property (nonatomic,readonly) BOOL hasContentAboveCoverSheet;
+-(BOOL)_isShowingChargingModal;
+- (void)updateStartup;
+-(BOOL)_isRemoteContentPresentedInUnlockMode;
 @end
 
 @interface SBUIProudLockIconView : UIView
@@ -167,6 +183,7 @@ traitCollection:(UITraitCollection *)traitCollection {
 @end
 
 @interface SBLockScreenManager : NSObject
+@property (nonatomic,readonly) CSCoverSheetViewController * coverSheetViewController;
 + (id)sharedInstance;
 - (BOOL)isLockScreenVisible;
 - (BOOL)isUILocked;
@@ -174,6 +191,7 @@ traitCollection:(UITraitCollection *)traitCollection {
 - (void)attemptUnlockWithPasscode:(id)arg1 finishUIUnlock:(BOOL)arg2 completion:(id)arg3;
 -(void)setPasscodeVisible:(BOOL)arg1 animated:(BOOL)arg2;
 -(BOOL)_isPasscodeVisible;
+-(void)attemptUnlockWithMesa;
 - (void)showMacPass;
 @end
 

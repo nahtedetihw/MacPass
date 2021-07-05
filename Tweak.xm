@@ -17,6 +17,8 @@ BOOL startWithKeyboard;
 NSString *usernameString;
 NSData *profilePicture;
 NSInteger passcodeType;
+CGFloat blurOpacity;
+NSNumber *passcodeCharacters;
 UIViewController *respringPopController;
 UIViewController *safeModePopController;
 BOOL canShowStartup;
@@ -24,6 +26,7 @@ BOOL isShowingMedia;
 BOOL isShowingNotifs;
 BOOL isShowingAlarm;
 BOOL isShowingCharging;
+BOOL isShowingCall;
 
 static bool isiPad() {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -60,6 +63,25 @@ static bool isBabyDevice() {
 }
 %end
 
+%hook SBLockScreenManager
+-(void)_handleBacklightLevelWillChange:(id)arg1 {
+    %orig;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self showMacPass];
+    });
+}
+
+%new
+- (void)showMacPass {
+    if (isShowingMedia == YES) return;
+    if (isShowingNotifs == YES) return;
+    if (isShowingAlarm == YES) return;
+    if (isShowingCharging == YES) return;
+    if (isShowingCall == YES) return;
+    if (showOnStartup && [self isLockScreenVisible] && [self _isPasscodeVisible] == NO) [self setPasscodeVisible:YES animated:YES];
+}
+%end
+    
 %hook CSCoverSheetViewController
 - (void)viewDidLoad {
     %orig;
@@ -84,27 +106,16 @@ static bool isBabyDevice() {
     } else {
         isShowingMedia = NO;
     }
+    if (self._isRemoteContentPresentedInUnlockMode) {
+        isShowingCall = YES;
+    } else {
+        isShowingCall = NO;
+    }
     if ([[[[[%c(SBScheduledAlarmObserver) sharedInstance] valueForKey:@"_alarmManager"] cache] nextAlarm] isFiring] == YES) {
         isShowingAlarm = YES;
     } else {
         isShowingAlarm = NO;
     }
-}
-%end
-
-%hook SBLockScreenManager
--(void)_handleBacklightLevelWillChange:(id)arg1 {
-    %orig;
-    [self showMacPass];
-}
-
-%new
-- (void)showMacPass {
-    if (isShowingMedia == YES) return;
-    if (isShowingNotifs == YES) return;
-    if (isShowingAlarm == YES) return;
-    if (isShowingCharging == YES) return;
-    if (showOnStartup && [self isLockScreenVisible] && [self _isPasscodeVisible] == NO) [self setPasscodeVisible:YES animated:YES];
 }
 %end
 
@@ -115,6 +126,7 @@ static bool isBabyDevice() {
     if (isShowingNotifs == YES) return NO;
     if (isShowingAlarm == YES) return NO;
     if (isShowingCharging == YES) return NO;
+    if (isShowingCall == YES) return NO;
     return YES;
     }
     return %orig;
@@ -155,6 +167,7 @@ static bool isBabyDevice() {
 
     self.blurViewPasscodeBackground = [[_UIBackdropView alloc] initWithSettings:self.settingsPasscodeBackground];
     self.blurViewPasscodeBackground.frame = self.view.frame;
+    self.blurViewPasscodeBackground.alpha = blurOpacity;
     self.blurViewPasscodeBackground.clipsToBounds = YES;
     self.view.clipsToBounds = YES;
     self.blurViewPasscodeBackground.userInteractionEnabled = NO;
@@ -172,9 +185,11 @@ static bool isBabyDevice() {
         self.profilePictureContainerView = [[UIView alloc] initWithFrame:CGRectMake(self.view.center.x,self.view.center.y,175,175)];
     }
     self.profilePictureContainerView.layer.masksToBounds = NO;
+    if (self.profilePictureView.image != nil) {
     self.profilePictureContainerView.layer.shadowOffset = CGSizeMake(0, 10);
     self.profilePictureContainerView.layer.shadowRadius = 6;
     self.profilePictureContainerView.layer.shadowOpacity = 0.1;
+    }
     [self.view addSubview:self.profilePictureContainerView];
     
     if (isBabyDevice() == YES) {
@@ -199,8 +214,10 @@ static bool isBabyDevice() {
     self.profilePictureView.image = [UIImage imageWithData:profilePicture];
     self.profilePictureView.layer.masksToBounds = YES;
     self.profilePictureView.layer.cornerRadius = self.profilePictureView.frame.size.height/2;
+    if (self.profilePictureView.image != nil) {
     self.profilePictureView.layer.borderWidth = 0.2;
     self.profilePictureView.layer.borderColor = [[UIColor whiteColor] colorWithAlphaComponent:0.4].CGColor;
+    }
     self.profilePictureView.contentMode = UIViewContentModeScaleAspectFill;
     [self.profilePictureContainerView addSubview:self.profilePictureView];
     
@@ -562,7 +579,9 @@ static bool isBabyDevice() {
         [self.safeModeLabel.centerYAnchor constraintEqualToAnchor:self.view.centerYAnchor constant:250].active = true;
     }
     
-    if (enableAutomaticUnlockFaceID) [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithFaceID) name:@"MacPassPasscodeAuthentication" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithFaceID) name:@"MacPassPasscodeAuthentication" object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(unlockWithTouchID) name:@"MacPassPasscodeAuthentication" object:nil];
 }
 
 %new
@@ -571,7 +590,7 @@ static bool isBabyDevice() {
         [self.searchTimer invalidate];
         self.searchTimer = nil;
     }
-    self.searchTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5 target: self selector: @selector(searchForKeyword:) userInfo: self.textField.text repeats: NO];
+    self.searchTimer = [NSTimer scheduledTimerWithTimeInterval: 0.8 target: self selector: @selector(searchForKeyword:) userInfo: self.textField.text repeats: NO];
 }
 
 %new
@@ -580,7 +599,6 @@ static bool isBabyDevice() {
 
     [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:keyword finishUIUnlock:1 completion:nil];
     if (![[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self dismiss];
-    AudioServicesPlaySystemSound(1519);
 }
 
 %new
@@ -628,8 +646,8 @@ static bool isBabyDevice() {
  
 %new
 - (void)attemptUnlock {
-    if ([self.textField.text length] < 4) [self wrongPasscode];
-    if ([self.textField.text length] >= 4) [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:[NSString stringWithFormat:@"%@", self.textField.text] finishUIUnlock:1 completion:nil];
+    if ([self.textField.text length] != [passcodeCharacters integerValue]) [self wrongPasscode];
+    if ([self.textField.text length] == [passcodeCharacters integerValue]) [[%c(SBLockScreenManager) sharedInstance] attemptUnlockWithPasscode:[NSString stringWithFormat:@"%@", self.textField.text] finishUIUnlock:1 completion:nil];
     if ([[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self wrongPasscode];
     if (![[%c(SBLockScreenManager) sharedInstance] isUILocked]) [self dismiss];
     AudioServicesPlaySystemSound(1519);
@@ -672,8 +690,12 @@ static bool isBabyDevice() {
 
 %new
 - (void)unlockWithFaceID {
-    [self dismiss];
-    [[%c(SBLockScreenManager) sharedInstance] unlockUIFromSource:17 withOptions:nil];
+    if (enableAutomaticUnlockFaceID) [[%c(SBLockScreenManager) sharedInstance] unlockUIFromSource:17 withOptions:nil];
+}
+
+%new
+- (void)unlockWithTouchID {
+    [[%c(SBLockScreenManager) sharedInstance] unlockUIFromSource:0 withOptions:nil];
 }
 
 %new
@@ -919,10 +941,6 @@ static bool isBabyDevice() {
 - (void)updateStatusText:(id)arg1 subtitle:(id)arg2 animated:(BOOL)arg3 {
     %orig(nil, nil, NO);
 }
-- (void)didMoveToWindow {
-    %orig;
-    [self removeFromSuperview];
-}
 %end
 
 %hook SBUIPasscodeLockViewBase
@@ -932,13 +950,14 @@ static bool isBabyDevice() {
 -(void)_setStatusSubtitleText:(id)arg1 {
     %orig(nil);
 }
-/*
--(void)setBiometricAuthenticationAllowed:(BOOL)arg1 {
-    %orig(NO);
-}
-*/
--(void)setPasscodeAuthenticationView:(UIView *)arg1 {
-    %orig(nil);
+-(BOOL)_canRecognizeBiometricAuthentication {
+    BOOL bio = %orig;
+    if (enableAutomaticUnlockFaceID) {
+        return YES;
+    } else {
+        return NO;
+    }
+    return bio;
 }
 -(BOOL)showsCancelButton {
     return NO;
@@ -949,14 +968,14 @@ static bool isBabyDevice() {
 %end
 
 %hook SBUIAlphanumericPasscodeEntryField
-- (void)didMoveToWindow {
+- (void)willMoveToWindow:(id)arg1 {
     %orig;
     [self removeFromSuperview];
 }
 %end
 
 %hook SBUIPasscodeTextField
-- (void)didMoveToWindow {
+- (void)willMoveToWindow:(id)arg1 {
     %orig;
     [self removeFromSuperview];
 }
@@ -1046,13 +1065,11 @@ static bool isBabyDevice() {
 }
 %end
 
-/*
 %hook SBUIPasscodeBiometricResource
 -(BOOL)hasBiometricAuthenticationCapabilityEnabled {
     return NO;
 }
 %end
-*/
 %end
 
 static void notificationCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
@@ -1072,6 +1089,8 @@ static void notificationCallback(CFNotificationCenterRef center, void *observer,
     [preferences registerObject:&usernameString default:@"MacPass" forKey:@"usernameString"];
     [preferences registerObject:&profilePicture default:nil forKey:@"profilePicture"];
     [preferences registerInteger:&passcodeType default:0 forKey:@"passcodeType"];
+    [preferences registerObject:&passcodeCharacters default:[NSNumber numberWithInt:6] forKey:@"passcodeCharacters"];
+    [preferences registerDouble:&blurOpacity default:1 forKey:@"blurOpacity"];
     
     if (enabled) {
         %init(MacPass);

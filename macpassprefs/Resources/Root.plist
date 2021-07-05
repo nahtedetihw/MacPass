@@ -20,6 +20,32 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
+			<string>Background Blur Opacity</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+			<key>default</key>
+			<integer>1</integer>
+			<key>defaults</key>
+			<string>com.nahtedetihw.macpassprefs</string>
+			<key>key</key>
+			<string>blurOpacity</string>
+			<key>max</key>
+			<integer>1</integer>
+			<key>min</key>
+			<integer>0</integer>
+			<key>isSegmented</key>
+			<false/>
+			<key>showValue</key>
+			<true/>
+			<key>PostNotification</key>
+			<string>com.nahtedetihw.macpassprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
 			<string>Profile Picture</string>
 		</dict>
 		<dict>
@@ -41,6 +67,16 @@
 			<string>com.nahtedetihw.macpassprefs</string>
 			<key>PostNotification</key>
 			<string>com.nahtedetihw.macpassprefs/preferences.changed</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>cellClass</key>
+			<string>HBSpinnerTableCell</string>
+			<key>label</key>
+			<string>Remove Picture</string>
+			<key>action</key>
+			<string>removePicture</string>
 		</dict>
 		<dict>
 			<key>cell</key>
@@ -123,6 +159,44 @@
 			<key>cell</key>
 			<string>PSGroupCell</string>
 			<key>label</key>
+			<string>Passcode Characters</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>HBStepperTableCell</string>
+			<key>default</key>
+			<string>6</string>
+			<key>defaults</key>
+			<string>com.nahtedetihw.macpassprefs</string>
+			<key>key</key>
+			<string>passcodeCharacters</string>
+			<key>label</key>
+			<string>%i Characters</string>
+			<key>max</key>
+			<integer>30</integer>
+			<key>min</key>
+			<integer>1</integer>
+			<key>singularLabel</key>
+			<string>1 Character</string>
+			<key>PostNotification</key>
+			<string>com.nahtedetihw.macpassprefs/ReloadPrefs</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Define the number of characters that are in your stock passcode</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
 			<string>Auto Unlock</string>
 		</dict>
 		<dict>
@@ -175,6 +249,18 @@
 		</dict>
 		<dict>
 			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
+		</dict>
+		<dict>
+			<key>cell</key>
 			<string>PSSwitchCell</string>
 			<key>default</key>
 			<false/>
@@ -190,6 +276,12 @@
 			<string>PSGroupCell</string>
 			<key>label</key>
 			<string>Shows the keyboard right away</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string></string>
 		</dict>
 		<dict>
 			<key>cell</key>

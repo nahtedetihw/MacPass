@@ -285,11 +285,15 @@ UIView *blackViewRespring;
     
     AudioServicesPlaySystemSound(1519);
 
-    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.1" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
+    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.2" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
 
-    [self.changelogController addBulletedListItemWithTitle:@"Auto Unlock" description:@"Fixed issues with Auto Unlock and separated the option for Auto Unlock with FaceID." image:[UIImage systemImageNamed:@"1.circle.fill"]];
+    [self.changelogController addBulletedListItemWithTitle:@"Auto Unlock" description:@"Fixed issues with auto unlock." image:[UIImage systemImageNamed:@"1.circle.fill"]];
     
-    [self.changelogController addBulletedListItemWithTitle:@"Passcode View" description:@"Fixed visual issues when using alphanumeric passcode." image:[UIImage systemImageNamed:@"2.circle.fill"]];
+    [self.changelogController addBulletedListItemWithTitle:@"Profile Picture" description:@"Added an option to remove Profile Picture." image:[UIImage systemImageNamed:@"2.circle.fill"]];
+    
+    [self.changelogController addBulletedListItemWithTitle:@"Background Blur" description:@"Added an option to adjust the blur opacity of the blur on the background." image:[UIImage systemImageNamed:@"3.circle.fill"]];
+    
+    [self.changelogController addBulletedListItemWithTitle:@"Passcode" description:@"Added an option to define the number of characters in your passcode to prevent disabling." image:[UIImage systemImageNamed:@"4.circle.fill"]];
 
     _UIBackdropViewSettings *settings = [_UIBackdropViewSettings settingsForStyle:2];
 
@@ -388,9 +392,21 @@ UIView *blackViewRespring;
             
             [alert dismissViewControllerAnimated:YES completion:nil];
         }];
-    [alert addAction:ok];
     [alert addAction:cancel];
+    [alert addAction:ok];
     [self presentViewController:alert animated:YES completion:nil];
+    
+    AudioServicesPlaySystemSound(1519);
+}
+
+- (void)removePicture {
+    HBPreferences *preferences = [[HBPreferences alloc] initWithIdentifier:@"com.nahtedetihw.macpassprefs"];
+    [preferences removeObjectForKey:@"profilePicture"];
+    
+    UIApplication *app = [UIApplication sharedApplication];
+    [app performSelector:@selector(suspend)];
+    [NSThread sleepForTimeInterval:1.0];
+    exit(0); 
     
     AudioServicesPlaySystemSound(1519);
 }
