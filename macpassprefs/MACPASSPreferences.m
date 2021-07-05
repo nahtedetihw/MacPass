@@ -285,15 +285,9 @@ UIView *blackViewRespring;
     
     AudioServicesPlaySystemSound(1519);
 
-    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.2" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
+    self.changelogController = [[OBWelcomeController alloc] initWithTitle:@"MacPass" detailText:@"1.3" icon:[UIImage imageWithContentsOfFile:@"/Library/PreferenceBundles/macpassprefs.bundle/changelogControllerIcon.png"]];
 
-    [self.changelogController addBulletedListItemWithTitle:@"Auto Unlock" description:@"Fixed issues with auto unlock." image:[UIImage systemImageNamed:@"1.circle.fill"]];
-    
-    [self.changelogController addBulletedListItemWithTitle:@"Profile Picture" description:@"Added an option to remove Profile Picture." image:[UIImage systemImageNamed:@"2.circle.fill"]];
-    
-    [self.changelogController addBulletedListItemWithTitle:@"Background Blur" description:@"Added an option to adjust the blur opacity of the blur on the background." image:[UIImage systemImageNamed:@"3.circle.fill"]];
-    
-    [self.changelogController addBulletedListItemWithTitle:@"Passcode" description:@"Added an option to define the number of characters in your passcode to prevent disabling." image:[UIImage systemImageNamed:@"4.circle.fill"]];
+    [self.changelogController addBulletedListItemWithTitle:@"Crash" description:@"Fixed a crash for users on iOS 13." image:[UIImage systemImageNamed:@"1.circle.fill"]];
 
     _UIBackdropViewSettings *settings = [_UIBackdropViewSettings settingsForStyle:2];
 

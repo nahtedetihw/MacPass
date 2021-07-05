@@ -26,7 +26,7 @@ BOOL isShowingMedia;
 BOOL isShowingNotifs;
 BOOL isShowingAlarm;
 BOOL isShowingCharging;
-BOOL isShowingCall;
+BOOL isShowingApp;
 
 static bool isiPad() {
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
@@ -77,7 +77,7 @@ static bool isBabyDevice() {
     if (isShowingNotifs == YES) return;
     if (isShowingAlarm == YES) return;
     if (isShowingCharging == YES) return;
-    if (isShowingCall == YES) return;
+    if (isShowingApp == YES) return;
     if (showOnStartup && [self isLockScreenVisible] && [self _isPasscodeVisible] == NO) [self setPasscodeVisible:YES animated:YES];
 }
 %end
@@ -106,10 +106,10 @@ static bool isBabyDevice() {
     } else {
         isShowingMedia = NO;
     }
-    if (self._isRemoteContentPresentedInUnlockMode) {
-        isShowingCall = YES;
+    if (self.isHostingAnApp == YES) {
+        isShowingApp = YES;
     } else {
-        isShowingCall = NO;
+        isShowingApp = NO;
     }
     if ([[[[[%c(SBScheduledAlarmObserver) sharedInstance] valueForKey:@"_alarmManager"] cache] nextAlarm] isFiring] == YES) {
         isShowingAlarm = YES;
@@ -126,7 +126,7 @@ static bool isBabyDevice() {
     if (isShowingNotifs == YES) return NO;
     if (isShowingAlarm == YES) return NO;
     if (isShowingCharging == YES) return NO;
-    if (isShowingCall == YES) return NO;
+    if (isShowingApp == YES) return NO;
     return YES;
     }
     return %orig;

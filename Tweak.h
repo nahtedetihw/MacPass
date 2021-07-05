@@ -141,6 +141,7 @@ traitCollection:(UITraitCollection *)traitCollection {
 -(BOOL)_isShowingChargingModal;
 - (void)updateStartup;
 -(BOOL)_isRemoteContentPresentedInUnlockMode;
+-(BOOL)isHostingAnApp;
 @end
 
 @interface SBUIProudLockIconView : UIView
